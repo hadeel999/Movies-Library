@@ -3,19 +3,15 @@
 **Author Name**: Hadeel Saleh
 
 ## WRRC
-![Capture](https://user-images.githubusercontent.com/103508563/165326640-09251e29-127c-4b87-b8b7-1840be56162d.PNG)
+![Task12](https://user-images.githubusercontent.com/103508563/165518501-8299b6c2-c36e-442f-9dfe-392f8874fbe6.PNG)
 
 ## Overview
-Simple project that open two pages: 
-* Home page
-* Favorite page
+Movies library.
 
 ## Getting Started
-* `npm init -y` // -y means --yes
-* create an `index.js` , name is optional
-* Install express package to use it`npm install express`
-* added the server code inside `index.js`
-* run the server using `node index.js`
+* Find API
+* Read documentation
+* Making requests from the server
 
 ## Project Features
-Home page to display only title , post path and overview of data and Favorite page.
+Movies app.
