@@ -1,20 +1,37 @@
 'use strict';
+require('dotenv').config();
+const URL=process.env.link;
+const port = 3003;
+const dataJson = require("./data.json");
 
 const express = require('express');
-const dataJson = require("./data.json");
 const cors=require('cors');
+const bodyParser=require('body-parser');
+
+
+const {Client} = require('pg');
+const client = new Client(URL);
 const axios=require('axios').default;
-require('dotenv').config()
+
+//const pg=require('pg');
+//const client=new pg.Client(URL);
 const apiKey=process.env.API_KEY;
+
 
 const app = express();
 app.use(cors());
-const port = 3000;
+app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.json());
 
 app.get("/", handleHomePage);
 app.get("/favorite", handleFavorite);
 app.get("/trending",handleTrending);
 app.get("/search",handleSearch);
+app.post("/addMovie",handleAddMovies);
+app.get("/getMovies",handleGetMovies);
+app.use("*",handleNotFound);
+app.use(handleError);
+
 
 function handleHomePage(req, res) {   
         let newRecipe = new Recipe(dataJson.title, dataJson.poster_path, dataJson.overview);
@@ -76,11 +93,56 @@ axios.get(url3)
 
 }
 
-app.listen(port, handleListen);
+function handleNotFound(req,res){
+res.send("Page not found");
+}
+
+function handleError(err,req,res){
+    res.status(500).send(err);
+}
+
+function handleAddMovies(req,res){
+console.log(req.body);
+const id=req.body.id;
+const title=req.body.title;
+const release_date=req.body.release_date;
+const poster_path=req.body.poster_path;
+const overview=req.body.overview;
+//const {id,title,release_date,poster_path,overview}=req.body;
+let sql=`INSERT INTO movie(id,title,release_date,poster_path,overview) VALUES($1, $2, $3, $4, $5) RETURNING *;`
+let values=[id,title,release_date,poster_path,overview];
+client.query(sql,values).then((result)=>{
+    console.log(result.rows);
+    //return res.send("HHHHHHHHHHHHHHHHHH");
+    //return res.json(result.rows);
+    return res.status(201).json(result.rows[0]);
+}).catch((err) => {
+    handleError(err, req, res);
+});
+}
+
+function handleGetMovies(req,res){
+
+       let sql = 'SELECT * from movie;'
+    client.query(sql).then((result) => {
+        console.log(result);
+        res.json(result.rows);
+    }).catch((err) => {
+        handleError(err, req, res);
+    });
+}
+
+client.connect().then(()=>{
+    app.listen(port,()=>{
+        console.log(`Server is listening ${port}`);
+    });
+})
+
+/*app.listen(port, handleListen);
 
 function handleListen() {
     console.log(`Example app listening on port ${port}`);
-}
+}*/
 
 
 function Recipe(id,title,release_date, poster_path, overview) {
