@@ -29,6 +29,10 @@ app.get("/trending",handleTrending);
 app.get("/search",handleSearch);
 app.post("/addMovie",handleAddMovies);
 app.get("/getMovies",handleGetMovies);
+app.get("/getMovie/:id", handleGetMovieByID);
+app.put("/UPDATE/:id", handleUpdateMovie);
+app.delete("/DELETE/:id", handleDeleteMovie)
+
 app.use("*",handleNotFound);
 app.use(handleError);
 
@@ -123,13 +127,53 @@ client.query(sql,values).then((result)=>{
 
 function handleGetMovies(req,res){
 
-       let sql = 'SELECT * from movie;'
+       let sql = `SELECT * FROM movie;`
     client.query(sql).then((result) => {
         console.log(result);
         res.json(result.rows);
     }).catch((err) => {
         handleError(err, req, res);
     });
+}
+
+ function handleGetMovieByID(req,res){
+    const id = req.params.id;
+    console.log(id);
+
+    const sql = `SELECT * FROM movie WHERE id::int=${id};`
+    client.query(sql).then(result => {
+        console.log(result);
+        res.status(200).json(result.rows);
+
+    }).catch(error => {
+        console.log(error);
+        handleError(error, req, res);
+    })
+}
+
+function handleUpdateMovie(req,res){
+    const id = req.params.id;
+    const upMov = req.body;
+
+    const sql = `UPDATE movie SET title=$1, release_date=$2, poster_path=$3, overview=$4 WHERE id::int=${id} RETURNING *;`;
+    const values = [upMov.title, upMov.release_date, upMov.poster_path, upMov.overview];
+    client.query(sql, values).then(data => {
+        return res.status(200).json(data.rows);
+    }).catch(error => {
+        handleError(error, req, res);
+    })
+}
+
+function handleDeleteMovie(req,res){
+    const id = req.params.id;
+
+    const sql = `DELETE FROM movie WHERE id::int=${id};`
+    client.query(sql).then(() => {
+        return res.status(204).json([]);
+    }).catch(error => {
+        handleError(error, req, res);
+    })
+
 }
 
 client.connect().then(()=>{
