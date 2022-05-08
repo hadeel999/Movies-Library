@@ -3,15 +3,15 @@
 **Author Name**: Hadeel Saleh
 
 ## WRRC
-![task13](https://user-images.githubusercontent.com/103508563/165789758-a01f1841-0021-495e-aba5-b231b36dca8d.PNG)
+![task14](https://user-images.githubusercontent.com/103508563/167314718-f7698d47-3e82-421a-97e9-191ab33973b1.PNG)
 
 ## Overview
 Movies library.
 
 ## Getting Started
-* Create database
-* Create table
-* link database with .js file
+* Get fav. movie with id by params.
+* Update (put) movies information.
+* Delete Movies from the database.
 
 ## Project Features
 Movies app.
