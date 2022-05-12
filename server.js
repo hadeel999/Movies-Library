@@ -1,7 +1,7 @@
 'use strict';
 require('dotenv').config();
 const URL=process.env.link;
-const port = 3003;
+const port = process.env.PORT;
 const dataJson = require("./data.json");
 
 const express = require('express');
