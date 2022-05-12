@@ -12,7 +12,7 @@ const bodyParser=require('body-parser');
 const {Client} = require('pg');
 //const client = new Client(URL);
 const pg=require('pg');
-const client = new pg.Client({
+const client = new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
  });
