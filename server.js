@@ -43,7 +43,7 @@ app.use(handleError);
 
 
 function handleHomePage(req, res) {   
-        let newRecipe = new Recipe(dataJson.title, dataJson.poster_path, dataJson.overview);
+        let newRecipe = new Recipe(dataJson.title, dataJson.poster_path, dataJson.overview,dataJson.comment);
         res.json(newRecipe);
 }
 
@@ -56,7 +56,7 @@ axios.get("https://api.themoviedb.org/3/trending/all/week?api_key=37ddc7081e348b
     .then(result=>{
         console.log(result.data.results);
         let recipes=result.data.results.map(recipe=>{
-            return new Recipe(recipe.id,recipe.title,recipe.release_date,recipe.poster_path,recipe.overview);
+            return new Recipe(recipe.id,recipe.title,recipe.release_date,recipe.poster_path,recipe.overview,recipe.comment);
         })
         res.json(recipes);
     })
@@ -117,9 +117,10 @@ const title=req.body.title;
 const release_date=req.body.release_date;
 const poster_path=req.body.poster_path;
 const overview=req.body.overview;
+const comment=req.body.comment;
 //const {id,title,release_date,poster_path,overview}=req.body;
-let sql=`INSERT INTO movie(id,title,release_date,poster_path,overview) VALUES($1, $2, $3, $4, $5) RETURNING *;`
-let values=[id,title,release_date,poster_path,overview];
+let sql=`INSERT INTO movie(id,title,release_date,poster_path,overview,comment) VALUES($1, $2, $3, $4, $5,$6) RETURNING *;`
+let values=[id,title,release_date,poster_path,overview,comment];
 client.query(sql,values).then((result)=>{
     console.log(result.rows);
     //return res.send("HHHHHHHHHHHHHHHHHH");
@@ -145,7 +146,7 @@ function handleGetMovies(req,res){
     const id = req.params.id;
     console.log(id);
 
-    const sql = `SELECT * FROM movie WHERE id::int=${id};`
+    const sql = `SELECT * FROM movie WHERE id==${id};`
     client.query(sql).then(result => {
         console.log(result);
         res.status(200).json(result.rows);
@@ -160,8 +161,8 @@ function handleUpdateMovie(req,res){
     const id = req.params.id;
     const upMov = req.body;
 
-    const sql = `UPDATE movie SET title=$1, release_date=$2, poster_path=$3, overview=$4 WHERE id::int=${id} RETURNING *;`;
-    const values = [upMov.title, upMov.release_date, upMov.poster_path, upMov.overview];
+    const sql = `UPDATE movie SET title=$1, release_date=$2, poster_path=$3, overview=$4,comment=$5 WHERE id==${id} RETURNING *;`;
+    const values = [upMov.title, upMov.release_date, upMov.poster_path, upMov.overview,upMov.comment];
     client.query(sql, values).then(data => {
         return res.status(200).json(data.rows);
     }).catch(error => {
@@ -172,7 +173,7 @@ function handleUpdateMovie(req,res){
 function handleDeleteMovie(req,res){
     const id = req.params.id;
 
-    const sql = `DELETE FROM movie WHERE id::int=${id};`
+    const sql = `DELETE FROM movie WHERE id==${id};`
     client.query(sql).then(() => {
         return res.status(204).json([]);
     }).catch(error => {
@@ -194,10 +195,11 @@ function handleListen() {
 }*/
 
 
-function Recipe(id,title,release_date, poster_path, overview) {
+function Recipe(id,title,release_date, poster_path, overview,comment) {
     this.id=id;
     this.title = title;
     this.release_date=release_date;
     this.poster_path=poster_path;
     this.overview=overview;
+    this.comment=comment;
 }
